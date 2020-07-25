@@ -26,4 +26,29 @@ app.get("/", function(req, res) {
   app.get("/notes", function(req, res) {
   res.sendFile(path.join(__dirname, "/public/notes.html"));
   });
-  
+
+// Displays all characters
+app.get("/api/notes", function(req, res) {
+  var data = require(path.join(__dirname, "/db/db.json"));
+  return res.json(data);
+});
+
+// Create New Characters - takes in JSON input
+app.post("/api/notes", function(req, res) {
+  // req.body hosts is equal to the JSON post sent from the user
+  // This works because of our body parsing middleware
+  var newData = req.body;
+      
+  fs.readFile(path.join(__dirname, "/db/db.json"), function(err, data) {
+      if (err) throw err;
+
+      var arrayOfObjects = JSON.parse(data);
+      arrayOfObjects.push(newData);
+
+      fs.writeFile(path.join(__dirname, "/db/db.json"), JSON.stringify(arrayOfObjects), function(err) {
+          if (err) throw err
+      });    
+      res.json(newData);
+  });
+
+});
