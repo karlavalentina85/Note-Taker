@@ -52,3 +52,31 @@ app.post("/api/notes", function(req, res) {
   });
 
 });
+app.delete("/api/notes/:id", function(req, res) {
+  fs.readFile(path.join(__dirname, "/db/db.json"), function (err, data) {
+      var notes = JSON.parse(data);
+      var noteID = req.params.id;
+      if (err) throw err;
+  
+      notes = notes.filter(function(note) {
+          return note.id != noteID;
+      });
+  
+      var value = 0;
+      notes.forEach(note => {
+          note.id = value;
+          value++;
+      });
+
+      console.log(notes);
+
+      fs.writeFileSync(path.join(__dirname, "/db/db.json"), JSON.stringify(notes));
+      res.json(notes);
+  });
+});
+
+// Starts the server to begin listening
+// =============================================================
+app.listen(PORT, function() {
+console.log("App listening on PORT " + PORT);
+});
